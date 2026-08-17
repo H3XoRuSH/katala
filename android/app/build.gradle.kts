@@ -24,13 +24,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            manifestPlaceholders["appName"] = "Katala (Debug)"
+        }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            isMinifyEnabled = false
+            isShrinkResources = false
+            manifestPlaceholders["appName"] = "Katala"
             signingConfig = signingConfigs.getByName("debug")
         }
     }

@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:label="Katala"
+        android:label="${appName}"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

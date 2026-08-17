@@ -109,17 +109,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.accentPrimary.withValues(alpha: 0.15),
-            ),
-            child: const Icon(
-              Icons.notifications_active_rounded,
-              size: 54,
-              color: AppColors.accentPrimary,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: Image.asset(
+              'assets/icons/app_icon.png',
+              width: 96,
+              height: 96,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(height: 32),
