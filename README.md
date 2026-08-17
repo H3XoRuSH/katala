@@ -51,6 +51,13 @@ Katala 🦜 (named after the Philippine Red-vented Cockatoo, *Cacatua haematurop
 
 ---
 
+## 📱 Platform Implementation Status
+
+- [x] **Android** — Fully supported & verified (offline Vosk STT, AlarmManager exact alarms, contact resolver, background action handlers, notification reconciliation)
+- [ ] **iOS** — *Pending / Deferred* (Speech framework bridge, UNNotificationCenter action extension, contact & action native bridges)
+
+---
+
 ## 🏗️ Architecture Overview
 
 Katala follows Clean Architecture principles with unidirectional data flow:

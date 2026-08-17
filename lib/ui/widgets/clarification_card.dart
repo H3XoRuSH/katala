@@ -204,337 +204,337 @@ class _ClarificationCardState extends State<ClarificationCard> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-                // Handle Bar
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: isDark ? Colors.white24 : Colors.black12,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-            const SizedBox(height: 16),
-
-            // Header
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
+              // Handle Bar
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.accentSecondary.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.help_outline_rounded,
-                    color: AppColors.accentSecondary,
-                    size: 22,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Clarification Needed',
-                        style: AppTypography.title.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                        ),
-                      ),
-                      if (widget.initialDraft.originalTranscript.isNotEmpty)
-                        Text(
-                          '"${widget.initialDraft.originalTranscript}"',
-                          style: AppTypography.small.copyWith(
-                            fontStyle: FontStyle.italic,
-                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  onPressed: widget.onCancel,
-                  tooltip: 'Cancel',
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const Divider(height: 1),
-            const SizedBox(height: 16),
-
-            // Specific Issue 1: Missing Title
-            if (hasMissingTitle) ...[
-              Text(
-                'What should I remind you about?',
-                style: AppTypography.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                key: const Key('clarification_title_input'),
-                controller: _titleController,
-                decoration: InputDecoration(
-                  hintText: 'e.g., Buy groceries, Call mom',
-                  prefixIcon: const Icon(Icons.edit_outlined, size: 20),
-                  filled: true,
-                  fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
+                    color: isDark ? Colors.white24 : Colors.black12,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-            ] else ...[
-              // Standard Title Editor
-              TextField(
-                key: const Key('clarification_title_input'),
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: 'Reminder Title',
-                  prefixIcon: const Icon(Icons.title_rounded, size: 20),
-                  filled: true,
-                  fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
 
-            // Specific Issue 2: Ambiguous Time (AM vs PM)
-            if (hasAmbiguousTime) ...[
-              Text(
-                'Did you mean AM or PM?',
-                style: AppTypography.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
+              // Header
               Row(
                 children: [
-                  ChoiceChip(
-                    key: const Key('am_choice_chip'),
-                    label: const Text('AM (Morning)'),
-                    selected: _selectedAmPm == 'AM',
-                    onSelected: (_) => _handleAmPmToggle('AM'),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentSecondary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.help_outline_rounded,
+                      color: AppColors.accentSecondary,
+                      size: 22,
+                    ),
                   ),
-                  const SizedBox(width: 10),
-                  ChoiceChip(
-                    key: const Key('pm_choice_chip'),
-                    label: const Text('PM (Evening)'),
-                    selected: _selectedAmPm == 'PM',
-                    onSelected: (_) => _handleAmPmToggle('PM'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            // Specific Issue 3: Missing Time or Time in Past
-            if (hasMissingTime || hasTimeInPast) ...[
-              Text(
-                hasTimeInPast ? 'That time has passed. Pick a future time.' : 'When should I remind you?',
-                style: AppTypography.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: hasTimeInPast
-                      ? AppColors.error
-                      : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ActionChip(
-                    key: const Key('chip_later_today'),
-                    avatar: const Icon(Icons.wb_sunny_outlined, size: 16),
-                    label: const Text('Later today'),
-                    onPressed: () => _handleQuickChipSelected('Later today'),
-                  ),
-                  ActionChip(
-                    key: const Key('chip_tomorrow_9am'),
-                    avatar: const Icon(Icons.wb_twilight_rounded, size: 16),
-                    label: const Text('Tomorrow 9 AM'),
-                    onPressed: () => _handleQuickChipSelected('Tomorrow 9 AM'),
-                  ),
-                  ActionChip(
-                    key: const Key('chip_tomorrow_5pm'),
-                    avatar: const Icon(Icons.nightlight_round_outlined, size: 16),
-                    label: const Text('Tomorrow 5 PM'),
-                    onPressed: () => _handleQuickChipSelected('Tomorrow 5 PM'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-            ],
-
-            // Date & Time Selector Tile
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _isTimeInPast
-                      ? AppColors.error
-                      : (_scheduledTime == null ? AppColors.warning : Colors.transparent),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.access_time_rounded,
-                    size: 20,
-                    color: _isTimeInPast ? AppColors.error : AppColors.accentPrimary,
-                  ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      _formatDateTime(_scheduledTime),
-                      style: AppTypography.body.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: _isTimeInPast
-                            ? AppColors.error
-                            : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Clarification Needed',
+                          style: AppTypography.title.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                          ),
+                        ),
+                        if (widget.initialDraft.originalTranscript.isNotEmpty)
+                          Text(
+                            '"${widget.initialDraft.originalTranscript}"',
+                            style: AppTypography.small.copyWith(
+                              fontStyle: FontStyle.italic,
+                              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                      ],
                     ),
                   ),
-                  TextButton.icon(
-                    key: const Key('clarification_time_picker_button'),
-                    onPressed: _pickDateTime,
-                    icon: const Icon(Icons.calendar_month_rounded, size: 18),
-                    label: const Text('Pick Time'),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: widget.onCancel,
+                    tooltip: 'Cancel',
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
-
-            // Specific Issue 4: Contact Resolution
-            if (hasContactIssue || widget.initialDraft.contactName != null) ...[
-              Text(
-                'Who would you like to contact?',
-                style: AppTypography.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                key: const Key('clarification_contact_input'),
-                controller: _contactController,
-                decoration: InputDecoration(
-                  hintText: 'Contact name or phone number',
-                  prefixIcon: const Icon(Icons.person_outline_rounded, size: 20),
-                  filled: true,
-                  fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
               const SizedBox(height: 16),
-            ],
-
-            // Specific Issue 5: Invalid URL
-            if (hasUrlIssue || widget.initialDraft.url != null) ...[
-              Text(
-                'Please check the website URL:',
-                style: AppTypography.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                key: const Key('clarification_url_input'),
-                controller: _urlController,
-                decoration: InputDecoration(
-                  hintText: 'https://...',
-                  prefixIcon: const Icon(Icons.link_rounded, size: 20),
-                  filled: true,
-                  fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
+              const Divider(height: 1),
               const SizedBox(height: 16),
-            ],
 
-            // Optional Notes
-            TextField(
-              key: const Key('clarification_notes_input'),
-              controller: _notesController,
-              decoration: InputDecoration(
-                labelText: 'Notes (Optional)',
-                prefixIcon: const Icon(Icons.notes_rounded, size: 20),
-                filled: true,
-                fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Action Buttons: Save & Cancel
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: widget.onCancel,
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text('Cancel'),
+              // Specific Issue 1: Missing Title
+              if (hasMissingTitle) ...[
+                Text(
+                  'What should I remind you about?',
+                  style: AppTypography.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    key: const Key('clarification_save_button'),
-                    onPressed: _isValid ? _submit : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accentPrimary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'Save Reminder',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                const SizedBox(height: 8),
+                TextField(
+                  key: const Key('clarification_title_input'),
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    hintText: 'e.g., Buy groceries, Call mom',
+                    prefixIcon: const Icon(Icons.edit_outlined, size: 20),
+                    filled: true,
+                    fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+              ] else ...[
+                // Standard Title Editor
+                TextField(
+                  key: const Key('clarification_title_input'),
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Reminder Title',
+                    prefixIcon: const Icon(Icons.title_rounded, size: 20),
+                    filled: true,
+                    fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
               ],
-            ),
-          ],
+
+              // Specific Issue 2: Ambiguous Time (AM vs PM)
+              if (hasAmbiguousTime) ...[
+                Text(
+                  'Did you mean AM or PM?',
+                  style: AppTypography.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    ChoiceChip(
+                      key: const Key('am_choice_chip'),
+                      label: const Text('AM (Morning)'),
+                      selected: _selectedAmPm == 'AM',
+                      onSelected: (_) => _handleAmPmToggle('AM'),
+                    ),
+                    const SizedBox(width: 10),
+                    ChoiceChip(
+                      key: const Key('pm_choice_chip'),
+                      label: const Text('PM (Evening)'),
+                      selected: _selectedAmPm == 'PM',
+                      onSelected: (_) => _handleAmPmToggle('PM'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Specific Issue 3: Missing Time or Time in Past
+              if (hasMissingTime || hasTimeInPast) ...[
+                Text(
+                  hasTimeInPast ? 'That time has passed. Pick a future time.' : 'When should I remind you?',
+                  style: AppTypography.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: hasTimeInPast
+                        ? AppColors.error
+                        : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ActionChip(
+                      key: const Key('chip_later_today'),
+                      avatar: const Icon(Icons.wb_sunny_outlined, size: 16),
+                      label: const Text('Later today'),
+                      onPressed: () => _handleQuickChipSelected('Later today'),
+                    ),
+                    ActionChip(
+                      key: const Key('chip_tomorrow_9am'),
+                      avatar: const Icon(Icons.wb_twilight_rounded, size: 16),
+                      label: const Text('Tomorrow 9 AM'),
+                      onPressed: () => _handleQuickChipSelected('Tomorrow 9 AM'),
+                    ),
+                    ActionChip(
+                      key: const Key('chip_tomorrow_5pm'),
+                      avatar: const Icon(Icons.nightlight_round_outlined, size: 16),
+                      label: const Text('Tomorrow 5 PM'),
+                      onPressed: () => _handleQuickChipSelected('Tomorrow 5 PM'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+
+              // Date & Time Selector Tile
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: _isTimeInPast
+                        ? AppColors.error
+                        : (_scheduledTime == null ? AppColors.warning : Colors.transparent),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.access_time_rounded,
+                      size: 20,
+                      color: _isTimeInPast ? AppColors.error : AppColors.accentPrimary,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _formatDateTime(_scheduledTime),
+                        style: AppTypography.body.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: _isTimeInPast
+                              ? AppColors.error
+                              : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                        ),
+                      ),
+                    ),
+                    TextButton.icon(
+                      key: const Key('clarification_time_picker_button'),
+                      onPressed: _pickDateTime,
+                      icon: const Icon(Icons.calendar_month_rounded, size: 18),
+                      label: const Text('Pick Time'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Specific Issue 4: Contact Resolution
+              if (hasContactIssue || widget.initialDraft.contactName != null) ...[
+                Text(
+                  'Who would you like to contact?',
+                  style: AppTypography.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  key: const Key('clarification_contact_input'),
+                  controller: _contactController,
+                  decoration: InputDecoration(
+                    hintText: 'Contact name or phone number',
+                    prefixIcon: const Icon(Icons.person_outline_rounded, size: 20),
+                    filled: true,
+                    fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Specific Issue 5: Invalid URL
+              if (hasUrlIssue || widget.initialDraft.url != null) ...[
+                Text(
+                  'Please check the website URL:',
+                  style: AppTypography.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  key: const Key('clarification_url_input'),
+                  controller: _urlController,
+                  decoration: InputDecoration(
+                    hintText: 'https://...',
+                    prefixIcon: const Icon(Icons.link_rounded, size: 20),
+                    filled: true,
+                    fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Optional Notes
+              TextField(
+                key: const Key('clarification_notes_input'),
+                controller: _notesController,
+                decoration: InputDecoration(
+                  labelText: 'Notes (Optional)',
+                  prefixIcon: const Icon(Icons.notes_rounded, size: 20),
+                  filled: true,
+                  fillColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Action Buttons: Save & Cancel
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: widget.onCancel,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                      key: const Key('clarification_save_button'),
+                      onPressed: _isValid ? _submit : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accentPrimary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Save Reminder',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
