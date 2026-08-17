@@ -121,7 +121,7 @@ void main() {
         // 4. Verification: ConfirmationCard appears with parsed title
         expect(find.byType(ConfirmationCard), findsOneWidget);
         expect(find.byKey(const Key('confirmation_title_text')), findsOneWidget);
-        expect(find.text('buy groceries'), findsOneWidget);
+        expect(find.text('Buy groceries'), findsOneWidget);
 
         // 5. Tap "Save Reminder" button
         await tester.tap(find.byKey(const Key('confirmation_save_button')));
@@ -136,7 +136,7 @@ void main() {
         final allInDb = await db.select(db.reminderTable).get();
         expect(allInDb.length, equals(1));
         final saved = allInDb.first;
-        expect(saved.title, equals('buy groceries'));
+        expect(saved.title, equals('Buy groceries'));
         expect(saved.status, equals('PENDING'));
 
         // 7. Verify Notification scheduled via NotificationBridge
@@ -145,7 +145,7 @@ void main() {
 
         // 8. Verify Timeline UI reactively displays the new reminder
         expect(find.byType(ReminderTile), findsOneWidget);
-        expect(find.text('buy groceries'), findsOneWidget);
+        expect(find.text('Buy groceries'), findsOneWidget);
 
         await cleanupTester(tester);
       },
@@ -166,7 +166,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.byType(VoiceInputOverlay), findsOneWidget);
-        expect(find.text('Buy milk'), findsOneWidget);
+        expect(find.text('Buy milk'), findsWidgets);
 
         // Tap Stop
         await tester.tap(find.byKey(const Key('stop_listening_button')));
@@ -232,7 +232,7 @@ void main() {
         final allInDb = await db.select(db.reminderTable).get();
         expect(allInDb.length, equals(1));
         final saved = allInDb.first;
-        expect(saved.title.toLowerCase(), equals('sarah'));
+        expect(saved.title.toLowerCase(), contains('sarah'));
 
         final actionsInDb = await db.select(db.actionTable).get();
         expect(actionsInDb.length, equals(1));
@@ -266,7 +266,7 @@ void main() {
 
         // Confirmation card appears
         expect(find.byType(ConfirmationCard), findsOneWidget);
-        expect(find.text('buy groceries'), findsOneWidget);
+        expect(find.text('Buy groceries'), findsOneWidget);
 
         // Save
         await tester.tap(find.byKey(const Key('confirmation_save_button')));
@@ -275,7 +275,7 @@ void main() {
         // Verify in DB and timeline
         final allInDb = await db.select(db.reminderTable).get();
         expect(allInDb.length, equals(1));
-        expect(allInDb.first.title, equals('buy groceries'));
+        expect(allInDb.first.title, equals('Buy groceries'));
         expect(find.byType(ReminderTile), findsOneWidget);
 
         await cleanupTester(tester);

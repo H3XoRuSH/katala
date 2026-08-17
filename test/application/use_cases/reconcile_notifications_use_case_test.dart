@@ -146,5 +146,78 @@ void main() {
       final meta = await repository.getMetadata('last_reconciled_at');
       expect(DateTime.parse(meta!), equals(fakeClock.now().toUtc()));
     });
+
+    test('Overdue reminder with notificationScheduled=false is not re-scheduled during reconciliation', () async {
+      // 1. Create reminder in past
+      final pastTime = fakeClock.now().subtract(const Duration(hours: 3));
+      final r1 = (await createUseCase.executeFromTranscript('Overdue task yesterday at 10am')).valueOrNull!;
+      final trigger = await repository.findTriggerByReminderId(r1.id);
+      await repository.update(
+        r1.copyWith(
+          trigger: trigger!.copyWith(
+            scheduledTimeUtc: pastTime,
+            notificationScheduled: false,
+            notificationId: null,
+          ),
+        ),
+        expectedVersion: r1.version,
+      );
+
+      // Notification bridge does not contain r1
+      if (r1.trigger?.notificationId != null) {
+        await notificationBridge.cancel(r1.trigger!.notificationId!);
+      }
+      expect(await notificationBridge.getScheduledIds(), isNot(contains(r1.trigger?.notificationId)));
+
+      // 2. Reconcile
+      final result = await reconcileUseCase.execute();
+
+      // r1 should NOT be scheduled
+      expect(result.scheduledIds, isNot(contains(r1.id)));
+      expect(await notificationBridge.getScheduledIds(), isEmpty);
+    });
+
+    test('Reminder within 2m grace window is scheduled if never fired, skipped if already fired', () async {
+      // 1. Unfired reminder 60 seconds overdue
+      final recentPastTime = fakeClock.now().subtract(const Duration(seconds: 60));
+      final r1 = (await createUseCase.executeFromTranscript('Task 1 tomorrow at 10am')).valueOrNull!;
+      final trigger1 = await repository.findTriggerByReminderId(r1.id);
+      await repository.update(
+        r1.copyWith(
+          trigger: trigger1!.copyWith(
+            scheduledTimeUtc: recentPastTime,
+            notificationScheduled: false,
+            notificationId: null,
+            firedAt: null,
+          ),
+        ),
+        expectedVersion: r1.version,
+      );
+      await notificationBridge.cancelForReminder(r1.id);
+
+      // 2. Already fired reminder 60 seconds overdue
+      final r2 = (await createUseCase.executeFromTranscript('Task 2 tomorrow at 2pm')).valueOrNull!;
+      final trigger2 = await repository.findTriggerByReminderId(r2.id);
+      await repository.update(
+        r2.copyWith(
+          trigger: trigger2!.copyWith(
+            scheduledTimeUtc: recentPastTime,
+            notificationScheduled: false,
+            notificationId: null,
+            firedAt: recentPastTime,
+          ),
+        ),
+        expectedVersion: r2.version,
+      );
+      await notificationBridge.cancelForReminder(r2.id);
+
+      // Run reconciliation
+      final result = await reconcileUseCase.execute();
+
+      // r1 (unfired) is scheduled within 2m grace window
+      expect(result.scheduledIds, contains(r1.id));
+      // r2 (already fired) is NOT scheduled
+      expect(result.scheduledIds, isNot(contains(r2.id)));
+    });
   });
 }

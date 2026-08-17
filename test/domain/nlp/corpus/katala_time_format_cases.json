@@ -1,0 +1,814 @@
+{
+  "_meta": {
+    "purpose": "Clock-time format normalization coverage for the Katala temporal parser.",
+    "reference_now": "2026-08-17T14:00:00+08:00",
+    "reference_now_note": "Monday, 2:00 PM Asia/Manila. All relative resolutions assume this instant.",
+    "default_rules_under_test": [
+      "Bare hour with no meridiem resolves to the NEXT occurrence of that hour.",
+      "12am = 00:00 (midnight), 12pm = 12:00 (noon).",
+      "A time already past today rolls to tomorrow unless a date is stated.",
+      "Invalid times must fail gracefully: valid=false, no crash, no silent clamping."
+    ],
+    "normalized_fields": {
+      "time_24h": "HH:MM in 24-hour form, or null if unresolvable",
+      "end_time_24h": "HH:MM for ranges, else null",
+      "date_offset": "today | tomorrow | explicit date string | null",
+      "meridiem_ambiguous": "true when the input gave no AM/PM and the parser had to infer",
+      "valid": "false when the input is not a resolvable time"
+    }
+  },
+  "cases": [
+    {
+      "id": "tf_001",
+      "language": "en",
+      "input": "Call mom at 9:30PM",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "mom",
+        "title": "Call mom",
+        "temporal_expression": "at 9:30PM",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_002",
+      "language": "en",
+      "input": "Call mom at 21:30",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "mom",
+        "title": "Call mom",
+        "temporal_expression": "at 21:30",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_003",
+      "language": "en",
+      "input": "Call mom at 930pm",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "mom",
+        "title": "Call mom",
+        "temporal_expression": "at 930pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_004",
+      "language": "en",
+      "input": "Call mom at 9.30 pm",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "mom",
+        "title": "Call mom",
+        "temporal_expression": "at 9.30 pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_005",
+      "language": "en",
+      "input": "Call mom at 9:30 p.m.",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "mom",
+        "title": "Call mom",
+        "temporal_expression": "at 9:30 p.m.",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_006",
+      "language": "en",
+      "input": "Call mom at nine thirty pm",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "mom",
+        "title": "Call mom",
+        "temporal_expression": "at nine thirty pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_007",
+      "language": "en",
+      "input": "Call mom at half past nine tonight",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "mom",
+        "title": "Call mom",
+        "temporal_expression": "at half past nine tonight",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_008",
+      "language": "en",
+      "input": "Meeting at quarter to 8 tomorrow morning",
+      "expected": {
+        "intent": "create",
+        "action": null,
+        "contact_name": null,
+        "title": "Meeting",
+        "temporal_expression": "at quarter to 8 tomorrow morning",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "07:45",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_009",
+      "language": "en",
+      "input": "Standup at 0930H",
+      "expected": {
+        "intent": "create",
+        "action": null,
+        "contact_name": null,
+        "title": "Standup",
+        "temporal_expression": "at 0930H",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "09:30",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_010",
+      "language": "en",
+      "input": "Take medicine at 12am",
+      "expected": {
+        "intent": "create",
+        "action": "take",
+        "contact_name": null,
+        "title": "Take medicine",
+        "temporal_expression": "at 12am",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "00:00",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_011",
+      "language": "en",
+      "input": "Lunch with Ana at 12pm",
+      "expected": {
+        "intent": "create",
+        "action": "meet",
+        "contact_name": "Ana",
+        "title": "Lunch with Ana",
+        "temporal_expression": "at 12pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "12:00",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_012",
+      "language": "en",
+      "input": "Remind me at 12",
+      "expected": {
+        "intent": "create",
+        "action": null,
+        "contact_name": null,
+        "title": "Reminder",
+        "temporal_expression": "at 12",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "00:00",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_013",
+      "language": "en",
+      "input": "Call the vet at 8:30",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "the vet",
+        "title": "Call the vet",
+        "temporal_expression": "at 8:30",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "20:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_014",
+      "language": "en",
+      "input": "Gym at 6",
+      "expected": {
+        "intent": "create",
+        "action": "workout",
+        "contact_name": null,
+        "title": "Gym",
+        "temporal_expression": "at 6",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "18:00",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_015",
+      "language": "en",
+      "input": "Standup at 9",
+      "expected": {
+        "intent": "create",
+        "action": null,
+        "contact_name": null,
+        "title": "Standup",
+        "temporal_expression": "at 9",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:00",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_016",
+      "language": "en",
+      "input": "Client call at 5 o'clock sharp",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "Client",
+        "title": "Client call",
+        "temporal_expression": "at 5 o'clock",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "17:00",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_017",
+      "language": "en",
+      "input": "Block 7-8pm for the review",
+      "expected": {
+        "intent": "create",
+        "action": "review",
+        "contact_name": null,
+        "title": "Review block",
+        "temporal_expression": "7-8pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "19:00",
+        "end_time_24h": "20:00",
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_018",
+      "language": "en",
+      "input": "Interview tomorrow from 10:00 to 11:30",
+      "expected": {
+        "intent": "create",
+        "action": null,
+        "contact_name": null,
+        "title": "Interview",
+        "temporal_expression": "tomorrow from 10:00 to 11:30",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "10:00",
+        "end_time_24h": "11:30",
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_019",
+      "language": "en",
+      "input": "Pay the rent on 10/5 at 9:30 pm",
+      "expected": {
+        "intent": "create",
+        "action": "pay",
+        "contact_name": null,
+        "title": "Pay the rent",
+        "temporal_expression": "on 10/5 at 9:30 pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "2026-10-05",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_020",
+      "language": "en",
+      "input": "Flight check-in Oct 5 at 21:30",
+      "expected": {
+        "intent": "create",
+        "action": "check",
+        "contact_name": null,
+        "title": "Flight check-in",
+        "temporal_expression": "Oct 5 at 21:30",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "2026-10-05",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_021",
+      "language": "en",
+      "input": "Lock the gate at midnight",
+      "expected": {
+        "intent": "create",
+        "action": "lock",
+        "contact_name": null,
+        "title": "Lock the gate",
+        "temporal_expression": "at midnight",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "00:00",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_022",
+      "language": "en",
+      "input": "Eat lunch at noon",
+      "expected": {
+        "intent": "create",
+        "action": "eat",
+        "contact_name": null,
+        "title": "Eat lunch",
+        "temporal_expression": "at noon",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "12:00",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_023",
+      "language": "fil",
+      "input": "Uminom ng gamot ng alas-nuwebe y medya ng gabi",
+      "expected": {
+        "intent": "create",
+        "action": "take",
+        "contact_name": null,
+        "title": "Uminom ng gamot",
+        "temporal_expression": "ng alas-nuwebe y medya ng gabi",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_024",
+      "language": "fil",
+      "input": "Tawagan si nanay ng ika-9:30 ng gabi",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "nanay",
+        "title": "Tawagan si nanay",
+        "temporal_expression": "ng ika-9:30 ng gabi",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_025",
+      "language": "fil",
+      "input": "Magbayad ng kuryente ng alas-siyete kinse ng umaga",
+      "expected": {
+        "intent": "create",
+        "action": "pay",
+        "contact_name": null,
+        "title": "Magbayad ng kuryente",
+        "temporal_expression": "ng alas-siyete kinse ng umaga",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "07:15",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_026",
+      "language": "fil",
+      "input": "Sunduin si bunso ng alas-dose ng tanghali",
+      "expected": {
+        "intent": "create",
+        "action": "pick up",
+        "contact_name": "bunso",
+        "title": "Sunduin si bunso",
+        "temporal_expression": "ng alas-dose ng tanghali",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "12:00",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_027",
+      "language": "fil",
+      "input": "Isara ang gate ng hatinggabi",
+      "expected": {
+        "intent": "create",
+        "action": "lock",
+        "contact_name": null,
+        "title": "Isara ang gate",
+        "temporal_expression": "ng hatinggabi",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "00:00",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_028",
+      "language": "taglish",
+      "input": "I-text si Dave mamayang 9:30",
+      "expected": {
+        "intent": "create",
+        "action": "text",
+        "contact_name": "Dave",
+        "title": "I-text si Dave",
+        "temporal_expression": "mamayang 9:30",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_029",
+      "language": "taglish",
+      "input": "Meeting bukas ng 930AM hanggang 11",
+      "expected": {
+        "intent": "create",
+        "action": "meet",
+        "contact_name": null,
+        "title": "Meeting",
+        "temporal_expression": "bukas ng 930AM hanggang 11",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "09:30",
+        "end_time_24h": "11:00",
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_030",
+      "language": "en",
+      "input": "Send the report at 8:5pm",
+      "expected": {
+        "intent": "create",
+        "action": "send",
+        "contact_name": null,
+        "title": "Send the report",
+        "temporal_expression": "at 8:5pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "20:05",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_031",
+      "language": "en",
+      "input": "Remind me at 25:00",
+      "expected": {
+        "intent": "create",
+        "action": null,
+        "contact_name": null,
+        "title": "Reminder",
+        "temporal_expression": "at 25:00",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": null,
+        "end_time_24h": null,
+        "date_offset": null,
+        "meridiem_ambiguous": false,
+        "valid": false
+      }
+    },
+    {
+      "id": "tf_032",
+      "language": "en",
+      "input": "Call the bank at 13:30pm",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "the bank",
+        "title": "Call the bank",
+        "temporal_expression": "at 13:30pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "13:30",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_033",
+      "language": "en",
+      "input": "Pay Meralco account 9:30 before 21:30",
+      "expected": {
+        "intent": "create",
+        "action": "pay",
+        "contact_name": null,
+        "title": "Pay Meralco account",
+        "temporal_expression": "before 21:30",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_034",
+      "language": "en",
+      "input": "Call the clinic at 0917 555 1234 at 9:30am",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "the clinic",
+        "title": "Call the clinic",
+        "temporal_expression": "at 9:30am",
+        "notes": null,
+        "phone_number": "0917 555 1234",
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "09:30",
+        "end_time_24h": null,
+        "date_offset": "tomorrow",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_035",
+      "language": "en",
+      "input": "remind me at 9 30 pm to take out the trash",
+      "expected": {
+        "intent": "create",
+        "action": "take out",
+        "contact_name": null,
+        "title": "Take out the trash",
+        "temporal_expression": "at 9 30 pm",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "tf_036",
+      "language": "en",
+      "input": "Hey Katala remind me at nine thirty in the evening to call dad",
+      "expected": {
+        "intent": "create",
+        "action": "call",
+        "contact_name": "dad",
+        "title": "Call dad",
+        "temporal_expression": "at nine thirty in the evening",
+        "notes": null,
+        "phone_number": null,
+        "url": null
+      },
+      "normalized": {
+        "time_24h": "21:30",
+        "end_time_24h": null,
+        "date_offset": "today",
+        "meridiem_ambiguous": false,
+        "valid": true
+      }
+    }
+  ]
+}

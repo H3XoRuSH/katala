@@ -54,8 +54,11 @@ class BootReceiver : BroadcastReceiver() {
                             continue
                         }
 
-                        // Don't re-schedule past alarms that are more than 1 hour overdue
-                        if (triggerEpoch < System.currentTimeMillis() - 3600000L) {
+                        val nowMillis = System.currentTimeMillis()
+                        val isEligible = triggerEpoch > nowMillis ||
+                            (reminder.firedAt == null && triggerEpoch >= nowMillis - 120_000L)
+
+                        if (!isEligible) {
                             continue
                         }
 

@@ -39,6 +39,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         when (action) {
             NotificationBridgeImpl.ACTION_ALARM_TRIGGER -> {
+                if (reminderId.isNotEmpty() && !DatabaseHelper.isReminderActive(context, reminderId)) {
+                    // Task was completed, deleted, or dismissed early; suppress alarm notification
+                    return
+                }
                 showNotification(context, intent, reminderId, notificationId)
             }
             ACTION_COMPLETE -> {
@@ -238,6 +242,17 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         notificationManager?.notify(notificationId, builder.build())
+
+        if (reminderId.isNotEmpty()) {
+            val pendingResult = goAsync()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    DatabaseHelper.markTriggerFired(context, reminderId)
+                } finally {
+                    pendingResult.finish()
+                }
+            }
+        }
     }
 
     private fun scheduleSnoozeAlarm(

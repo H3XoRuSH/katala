@@ -94,11 +94,14 @@ class UndoDeleteReminderUseCase {
       return Result.failure(PersistenceFailed('Failed to restore reminder: $e'));
     }
 
-    // Re-schedule notification if reminder is active and scheduled time is in the future
+    // Re-schedule notification if reminder is active and scheduled time is in the future (or within 2m grace window if never fired)
     final isPendingOrSnoozed = persisted.status == ReminderStatus.pending || persisted.status == ReminderStatus.snoozed;
-    final isFuture = persisted.trigger != null && persisted.trigger!.scheduledTimeUtc.isAfter(clock.now().toUtc());
+    final trigger = persisted.trigger;
+    final isEligible = trigger != null &&
+        (trigger.scheduledTimeUtc.isAfter(clock.now().toUtc()) ||
+            (trigger.firedAt == null && trigger.scheduledTimeUtc.isAfter(clock.now().toUtc().subtract(const Duration(minutes: 2)))));
 
-    if (isPendingOrSnoozed && isFuture) {
+    if (isPendingOrSnoozed && isEligible) {
       try {
         final notifId = await notificationBridge.schedule(persisted);
         await repository.updateTriggerScheduling(persisted.id, true, notifId);

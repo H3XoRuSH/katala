@@ -26,14 +26,19 @@ class PreProcessor {
     'a. m.': 'am',
     'pm.': 'pm',
     'am.': 'am',
+    'later i mean': '',
   };
 
   static final List<RegExp> _fillerPrefixes = [
-    RegExp(r'^(um|uh|er|ah)[,\s]*', caseSensitive: false),
+    RegExp(r'^(hey\s+katala|hi\s+katala|katala)[,\s]*', caseSensitive: false),
+    RegExp(r'^(um|uh|er|ah)[,\s]+', caseSensitive: false),
     RegExp(r'^(can you please|could you please|would you please|can you|could you|would you|please)[,\s]*',
         caseSensitive: false),
     RegExp(r'^(i want to|i need to|i have to)[,\s]*', caseSensitive: false),
-    RegExp(r'^(paki|pwede bang|paki-)[,\s]*', caseSensitive: false),
+    RegExp(r'^(paki-?remind\s+naman(\s+ako|\s+mo)?(\s+na)?)[,\s]*', caseSensitive: false),
+    RegExp(r'^(i-remind(\s+mo)?(\s+ako|\s+naman)?(\s+na)?)[,\s]*', caseSensitive: false),
+    RegExp(r'^(sabihin\s+mo\s+sa\s+akin(\s+na)?)[,\s]*', caseSensitive: false),
+    RegExp(r'^(paki|pwede bang|paki-)[,\s]+', caseSensitive: false),
   ];
 
   /// Processes raw transcript into a cleaned, normalized transcript.
@@ -49,13 +54,18 @@ class PreProcessor {
     // 2. Lowercase
     text = text.toLowerCase();
 
-    // 3. Strip all filler prefixes iteratively
+    // 3. Strip mid-sentence filler sounds & duplicate words
+    text = text.replaceAll(RegExp(r'\b(um|uh|er)\b', caseSensitive: false), ' ');
+    text = text.replaceAll(RegExp(r'\bto\s+to\b', caseSensitive: false), 'to');
+    text = text.replaceAll(RegExp(r'^[:,\-\s]+'), '').trim();
+
+    // 4. Strip all filler prefixes iteratively
     bool changed = true;
     while (changed && text.isNotEmpty) {
       changed = false;
       for (final pattern in _fillerPrefixes) {
         if (pattern.hasMatch(text)) {
-          final newText = text.replaceFirst(pattern, '').trim();
+          final newText = text.replaceFirst(pattern, '').replaceAll(RegExp(r'^[:,\-\s]+'), '').trim();
           if (newText != text) {
             text = newText;
             changed = true;
@@ -64,16 +74,16 @@ class PreProcessor {
       }
     }
 
-    // 4. Apply STT corrections
+    // 5. Apply STT corrections
     for (final entry in _sttCorrections.entries) {
       text = text.replaceAll(entry.key, entry.value);
     }
 
-    // 5. Clean punctuation around numbers and ends of sentences
+    // 6. Clean punctuation around numbers and ends of sentences
     text = text.replaceAllMapped(RegExp(r'(\d+)\s*:\s*(\d+)'), (m) => '${m[1]}:${m[2]}');
     text = text.replaceAll(RegExp(r'[.!?,;]+$'), '');
 
-    // 6. Collapse multiple whitespace and trim
+    // 7. Collapse multiple whitespace and trim
     text = text.replaceAll(RegExp(r'\s+'), ' ').trim();
 
     return NormalizedTranscript(

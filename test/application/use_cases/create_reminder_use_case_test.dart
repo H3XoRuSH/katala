@@ -59,7 +59,7 @@ void main() {
       final reminder = result.valueOrNull!;
 
       expect(reminder.id, isNotEmpty);
-      expect(reminder.title, 'adam');
+      expect(reminder.title, 'Call Adam');
       expect(reminder.intentType, IntentType.call);
       expect(reminder.status, ReminderStatus.pending);
       expect(reminder.trigger?.scheduledTimeUtc, DateTime.utc(2026, 8, 18, 15, 0));
@@ -122,7 +122,7 @@ void main() {
       // Persisted in DB
       final inDb = await repository.getById(reminder.id);
       expect(inDb, isNotNull);
-      expect(inDb!.title, 'stretch');
+      expect(inDb!.title, 'Stretch');
     });
   });
 }

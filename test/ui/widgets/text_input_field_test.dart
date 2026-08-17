@@ -44,7 +44,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check preview
-      expect(find.text('adam'), findsOneWidget);
+      expect(find.text('Call Adam'), findsOneWidget);
       expect(find.textContaining('Aug 17'), findsOneWidget);
 
       // Submit via submit icon

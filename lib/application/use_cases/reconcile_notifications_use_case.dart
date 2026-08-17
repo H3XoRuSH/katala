@@ -56,11 +56,17 @@ class ReconcileNotificationsUseCase {
       }
 
       // 2. Schedule missing notifications up to OS limit
+      final now = clock.now();
       final limit = notificationBridge.maxPendingNotifications;
       final pendingReminders = await repository.getPendingSortedByTime(limit: limit);
 
       for (final reminder in pendingReminders) {
-        if (reminder.trigger != null && !reminder.trigger!.notificationScheduled) {
+        final trigger = reminder.trigger;
+        final isEligible = trigger != null &&
+            !trigger.notificationScheduled &&
+            (trigger.scheduledTimeUtc.isAfter(now.toUtc()) ||
+                (trigger.firedAt == null && trigger.scheduledTimeUtc.isAfter(now.toUtc().subtract(const Duration(minutes: 2)))));
+        if (isEligible) {
           try {
             // Idempotent duplicate prevention: cancel old notification before scheduling new
             if (reminder.trigger?.notificationId != null) {
@@ -78,13 +84,13 @@ class ReconcileNotificationsUseCase {
         }
       }
 
-      // 3. Detect missed deliveries
-      final now = clock.now();
+      // 3. Detect missed deliveries (with 2-minute grace period for active alarms)
       final lastReconciledStr = await repository.getMetadata('last_reconciled_at');
       if (lastReconciledStr != null) {
         final lastReconciled = DateTime.tryParse(lastReconciledStr);
-        if (lastReconciled != null && now.isAfter(lastReconciled)) {
-          final missedReminders = await repository.getByTimeRange(lastReconciled, now);
+        final missedCutoff = now.subtract(const Duration(minutes: 2));
+        if (lastReconciled != null && missedCutoff.isAfter(lastReconciled)) {
+          final missedReminders = await repository.getByTimeRange(lastReconciled, missedCutoff);
           for (final reminder in missedReminders) {
             if ((reminder.status == ReminderStatus.pending || reminder.status == ReminderStatus.snoozed) &&
                 !reminder.isDeleted) {

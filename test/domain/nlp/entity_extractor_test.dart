@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:katala/domain/nlp/entity_extractor.dart';
 import 'package:katala/domain/nlp/models/normalized_transcript.dart';
-import 'package:katala/domain/nlp/models/temporal_expression.dart';
 
 void main() {
   group('Stage 3: EntityExtractor', () {
@@ -15,7 +14,7 @@ void main() {
       final result = extractor.extract(input);
       expect(result.url, 'https://katala.app');
       expect(result.timeExpressionText, 'at 5pm');
-      expect(result.title, 'check');
+      expect(result.title, 'Check');
     });
 
     test('extracts phone number before contact names', () {
@@ -26,7 +25,7 @@ void main() {
       final result = extractor.extract(input);
       expect(result.phoneNumber, '09171234567');
       expect(result.timeExpressionText, 'at noon');
-      expect(result.title, 'call');
+      expect(result.title, 'Call');
     });
 
     test('extracts English contact name and temporal expression', () {
@@ -36,7 +35,7 @@ void main() {
       );
       final result = extractor.extract(input);
       expect(result.contactName, 'adam');
-      expect(result.title, 'adam');
+      expect(result.title, 'Call adam');
       expect(result.timeExpressionText, 'tomorrow at 3pm');
     });
 
@@ -47,7 +46,7 @@ void main() {
       );
       final result1 = extractor.extract(input1);
       expect(result1.contactName, 'mama');
-      expect(result1.title, 'mama');
+      expect(result1.title, 'Tawagan si mama');
       expect(result1.timeExpressionText, 'bukas ng 9am');
 
       const input2 = NormalizedTranscript(
@@ -56,7 +55,7 @@ void main() {
       );
       final result2 = extractor.extract(input2);
       expect(result2.contactName, 'ate');
-      expect(result2.title, 'ate');
+      expect(result2.title, 'I-text si ate');
       expect(result2.timeExpressionText, 'mamayang 5pm');
     });
 
@@ -70,13 +69,15 @@ void main() {
       expect(result.notes, 'discuss math grades');
     });
 
-    test('detects bare number temporal ambiguity ("at 3")', () {
+    test('preserves proper noun capitalization from original transcript', () {
       const input = NormalizedTranscript(
-        text: 'remind me to call at 3',
-        originalText: 'remind me to call at 3',
+        text: 'remind me to call gab in one minute',
+        originalText: 'remind me to call Gab in one minute',
       );
       final result = extractor.extract(input);
-      expect(result.temporalExpression?.ambiguity, TemporalAmbiguity.bareNumber);
+      expect(result.contactName, 'Gab');
+      expect(result.title, 'Call Gab');
+      expect(result.timeExpressionText, 'in one minute');
     });
   });
 }

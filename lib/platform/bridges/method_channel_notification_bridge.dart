@@ -47,6 +47,13 @@ class MethodChannelNotificationBridge implements NotificationBridge {
   @override
   Future<int> schedule(Reminder reminder) async {
     final fallbackId = reminder.trigger?.notificationId ?? (reminder.id.hashCode & 0x7FFFFFFF);
+    final trigger = reminder.trigger;
+    final isEligible = trigger == null ||
+        trigger.scheduledTimeUtc.isAfter(DateTime.now().toUtc()) ||
+        (trigger.firedAt == null && trigger.scheduledTimeUtc.isAfter(DateTime.now().toUtc().subtract(const Duration(minutes: 2))));
+    if (!isEligible) {
+      return fallbackId;
+    }
     try {
       final result = await _channel.invokeMethod<int>(
         'schedule',

@@ -56,6 +56,16 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
   bool get _isTerminalState =>
       _currentReminder.status == ReminderStatus.completed || _currentReminder.status == ReminderStatus.dismissed;
 
+  bool get _isOverdue {
+    final sched = _currentReminder.trigger?.scheduledTimeUtc;
+    if (sched == null) return false;
+    final isPendingOrSnoozed = _currentReminder.status == ReminderStatus.pending ||
+        _currentReminder.status == ReminderStatus.snoozed;
+    final now = ref.read(clockProvider).now().toUtc();
+    final nowMinuteUtc = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute);
+    return isPendingOrSnoozed && sched.isBefore(nowMinuteUtc);
+  }
+
   String _formatDateTime(DateTime? dt) {
     if (dt == null) return 'N/A';
     return DateFormat('EEE, MMM d, yyyy  h:mm a').format(dt.toLocal());
@@ -77,6 +87,9 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
   }
 
   Color _getStatusColor(ReminderStatus status) {
+    if (_isOverdue) {
+      return AppColors.error;
+    }
     switch (status) {
       case ReminderStatus.pending:
         return AppColors.accentPrimary;
@@ -89,7 +102,14 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
     }
   }
 
-  Color _getDeliveryColor(DeliveryStatus? status) {
+  Color _getDeliveryColor(DeliveryStatus? status, DateTime? firedAt) {
+    if (firedAt != null) {
+      return AppColors.success;
+    }
+    if (_isOverdue) {
+      if (status == DeliveryStatus.deliveryUncertain) return AppColors.warning;
+      return AppColors.error;
+    }
     switch (status) {
       case DeliveryStatus.deliveryUncertain:
         return AppColors.warning;
@@ -98,6 +118,53 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
       case DeliveryStatus.scheduled:
       default:
         return AppColors.accentPrimary;
+    }
+  }
+
+  String _getDeliveryStatusText(DeliveryStatus? status, DateTime? firedAt) {
+    if (firedAt != null) {
+      return 'Delivery: Delivered';
+    }
+    if (_isOverdue) {
+      switch (status) {
+        case DeliveryStatus.deliveryUncertain:
+          return 'Delivery: Uncertain (May not have arrived)';
+        case DeliveryStatus.deliveryMissed:
+          return 'Delivery: Missed';
+        case DeliveryStatus.scheduled:
+        default:
+          return 'Delivery: Overdue';
+      }
+    }
+    switch (status) {
+      case DeliveryStatus.deliveryUncertain:
+        return 'Delivery: Uncertain (May not have arrived)';
+      case DeliveryStatus.deliveryMissed:
+        return 'Delivery: Missed';
+      case DeliveryStatus.scheduled:
+      default:
+        return 'Delivery: Scheduled';
+    }
+  }
+
+  IconData _getDeliveryIcon(DeliveryStatus? status, DateTime? firedAt) {
+    if (firedAt != null) {
+      return Icons.check_circle_outline_rounded;
+    }
+    if (_isOverdue) {
+      if (status == DeliveryStatus.deliveryUncertain) {
+        return Icons.warning_amber_rounded;
+      }
+      return Icons.alarm_off_rounded;
+    }
+    switch (status) {
+      case DeliveryStatus.deliveryUncertain:
+        return Icons.warning_amber_rounded;
+      case DeliveryStatus.deliveryMissed:
+        return Icons.error_outline_rounded;
+      case DeliveryStatus.scheduled:
+      default:
+        return Icons.notifications_active_outlined;
     }
   }
 
@@ -277,6 +344,7 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
     final scheduledTimeUtc = _currentReminder.trigger?.scheduledTimeUtc;
     final action = _currentReminder.action;
     final deliveryStatus = _currentReminder.trigger?.deliveryStatus;
+    final firedAt = _currentReminder.trigger?.firedAt;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkSurfaceBg : AppColors.lightSurfaceBg,
@@ -350,7 +418,7 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              _currentReminder.status.value.toUpperCase(),
+                              _isOverdue ? 'OVERDUE' : _currentReminder.status.value.toUpperCase(),
                               key: const Key('detail_status_badge'),
                               style: AppTypography.small.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -438,18 +506,18 @@ class _ReminderDetailScreenState extends ConsumerState<ReminderDetailScreen> {
                   child: Row(
                     children: [
                       Icon(
-                        Icons.notifications_active_outlined,
+                        _getDeliveryIcon(deliveryStatus, firedAt),
                         size: 20,
-                        color: _getDeliveryColor(deliveryStatus),
+                        color: _getDeliveryColor(deliveryStatus, firedAt),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Delivery: ${deliveryStatus.value}',
+                          _getDeliveryStatusText(deliveryStatus, firedAt),
                           key: const Key('detail_delivery_status_text'),
                           style: AppTypography.small.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: _getDeliveryColor(deliveryStatus),
+                            color: _getDeliveryColor(deliveryStatus, firedAt),
                           ),
                         ),
                       ),
