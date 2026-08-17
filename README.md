@@ -1,15 +1,23 @@
-# Katala 🦜
+<p align="center">
+  <img src="assets/icons/app_icon.png" alt="Katala Logo" width="128" />
+</p>
 
-> **Offline-first, voice-driven, context-aware smart reminders for iOS and Android.**
+<h1 align="center">Katala</h1>
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.5+-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.5+-0175C2?logo=dart&logoColor=white)](https://dart.dev)
-[![Platforms](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-lightgrey)](https://flutter.dev)
-[![Privacy](https://img.shields.io/badge/Privacy-100%25%20On--Device-success)](docs/KATALA_SPEC_V3.md)
-[![Zero Network](https://img.shields.io/badge/Network-Zero%20Permission-blueviolet)](docs/MVP_FINAL_GATE_VERIFICATION.md)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <strong>Offline-first, voice-driven, context-aware smart reminders for iOS and Android.</strong>
+</p>
 
-Katala (named after the Philippine Red-vented Cockatoo, *Cacatua haematuropygia*) is a fast, privacy-guaranteed reminder application built with Flutter. It converts natural speech into actionable, context-rich reminders entirely on-device with **zero cloud APIs, zero user accounts, and zero network data transmission**.
+<p align="center">
+  <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Flutter-3.5+-02569B?logo=flutter&logoColor=white" alt="Flutter" /></a>
+  <a href="https://dart.dev"><img src="https://img.shields.io/badge/Dart-3.5+-0175C2?logo=dart&logoColor=white" alt="Dart" /></a>
+  <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Platform-iOS%20%7C%20Android-lightgrey" alt="Platforms" /></a>
+  <a href="docs/KATALA_SPEC_V3.md"><img src="https://img.shields.io/badge/Privacy-100%25%20On--Device-success" alt="Privacy" /></a>
+  <a href="docs/MVP_FINAL_GATE_VERIFICATION.md"><img src="https://img.shields.io/badge/Network-Zero%20Permission-blueviolet" alt="Zero Network" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" /></a>
+</p>
+
+Katala 🦜 (named after the Philippine Red-vented Cockatoo, *Cacatua haematuropygia*) is a fast, privacy-guaranteed reminder application built with Flutter. It converts natural speech into actionable, context-rich reminders entirely on-device with **zero cloud APIs, zero user accounts, and zero network data transmission**.
 
 ---
 
