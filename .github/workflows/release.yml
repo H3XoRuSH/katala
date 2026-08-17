@@ -1,0 +1,58 @@
+name: Release Katala
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run analyzer & tests
+        run: |
+          flutter analyze
+          flutter test
+
+      - name: Build Universal APK
+        run: flutter build apk --release
+
+      - name: Build Split-per-ABI APKs
+        run: flutter build apk --release --split-per-abi
+
+      - name: Prepare Release Artifacts
+        run: |
+          mkdir -p release-artifacts
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          cp build/app/outputs/flutter-apk/app-release.apk release-artifacts/katala-${TAG_NAME}-universal.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk release-artifacts/katala-${TAG_NAME}-arm64-v8a.apk || true
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk release-artifacts/katala-${TAG_NAME}-armeabi-v7a.apk || true
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk release-artifacts/katala-${TAG_NAME}-x86_64.apk || true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-artifacts/*
+          generate_release_notes: true
