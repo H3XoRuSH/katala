@@ -1,4 +1,4 @@
-﻿# TASK_GROUPS.md — Katala Implementation Task Groups
+# TASK_GROUPS.md — Katala Implementation Task Groups
 
 **Version:** 1.0.0
 **Date:** 2026-08-10
@@ -900,13 +900,13 @@
 **Manual/device validation:** Visual verification of theme, font loading, and timeline on device/simulator
 
 **Definition of done:**
-- [ ] Dark theme renders correctly
-- [ ] Home screen shows timeline with groups
-- [ ] Mic button starts voice input overlay
-- [ ] Text input runs NLP pipeline
-- [ ] Onboarding completes and navigates to home
-- [ ] All widget tests pass
-- [ ] `flutter analyze` passes
+- [x] Dark theme renders correctly
+- [x] Home screen shows timeline with groups
+- [x] Mic button starts voice input overlay
+- [x] Text input runs NLP pipeline
+- [x] Onboarding completes and navigates to home
+- [x] All widget tests pass
+- [x] `flutter analyze` passes
 
 **Risks:**
 - Inter font bundling: verify font files load correctly on both platforms
@@ -1097,12 +1097,12 @@
 **Manual/device validation:** REQUIRED — real iOS device and real Android device(s). This is the first proof the architecture works.
 
 **Definition of done:**
-- [ ] Voice-to-persist flow works on at least one platform
-- [ ] < 5 seconds performance target met
-- [ ] iOS device tests pass (7/7)
-- [ ] Android device tests pass (7/7)
-- [ ] Integration test passes in CI
-- [ ] No architecture violations detected
+- [x] Voice-to-persist flow works on at least one platform
+- [x] < 5 seconds performance target met
+- [x] iOS device tests pass (7/7)
+- [x] Android device tests pass (7/7)
+- [x] Integration test passes in CI
+- [x] No architecture violations detected
 
 **Risks:**
 - Performance target (< 5 seconds) may be challenging on older devices — profile individual stages
@@ -1171,12 +1171,12 @@
 **Manual/device validation:** Notification action tap test on both platforms
 
 **Definition of done:**
-- [ ] Category coordination test passes on both platforms
-- [ ] Notification ID lifecycle is robust
-- [ ] Stale notifications cleaned on reconciliation
-- [ ] Duplicate notifications prevented
-- [ ] Missed detection logic verified
-- [ ] `flutter analyze` passes
+- [x] Category coordination test passes on both platforms
+- [x] Notification ID lifecycle is robust
+- [x] Stale notifications cleaned on reconciliation
+- [x] Duplicate notifications prevented
+- [x] Missed detection logic verified
+- [x] `flutter analyze` passes
 
 **Risks:**
 - ARCHITECTURE_CONSISTENCY_REVIEW.md M3: category identifiers must be EXACTLY identical between native bridge and flutter_local_notifications
@@ -1303,10 +1303,10 @@
 **Manual/device validation:** Required — real device profiling; mitmproxy network capture
 
 **Definition of done:**
-- [ ] Performance targets met or documented as requiring optimization
-- [ ] Database indices verified
-- [ ] Network audit script created and documented
-- [ ] Network audit passes (zero unexpected requests)
+- [x] Performance targets met or documented as requiring optimization
+- [x] Database indices verified
+- [x] Network audit script created and documented
+- [x] Network audit passes (zero unexpected requests)
 
 **Risks:**
 - Performance targets may be challenging on older devices; if not met, document as known limitation
@@ -1371,14 +1371,14 @@
 **Manual/device validation:** Required — release builds must be smoke-tested on real devices
 
 **Definition of done:**
-- [ ] Release IPA builds and archives successfully
-- [ ] Release APK/AAB builds and signs successfully
-- [ ] Privacy verification: all 12 checks pass
-- [ ] MVP final gate: every checkbox ticked
-- [ ] CI passes (analyze, test, build)
-- [ ] `flutter analyze` zero errors
-- [ ] `dart format` compliant
-- [ ] `pubspec.lock` committed
+- [x] Release IPA builds and archives successfully
+- [x] Release APK/AAB builds and signs successfully
+- [x] Privacy verification: all 12 checks pass
+- [x] MVP final gate: every checkbox ticked
+- [x] CI passes (analyze, test, build)
+- [x] `flutter analyze` zero errors
+- [x] `dart format` compliant
+- [x] `pubspec.lock` committed
 
 **Risks:**
 - Apple Developer account and signing certificates must be available for iOS release
