@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit
  */
 object DatabaseHelper {
 
-    private const val DB_NAME = "katala.db"
+    private val DB_NAMES = listOf("katala.sqlite", "katala.db", "katala")
 
     data class NativeReminder(
         val id: String,
@@ -23,23 +23,37 @@ object DatabaseHelper {
         val category: String,
         val actionType: String?,
         val actionTarget: String?,
-        val notificationId: Int
+        val notificationId: Int,
+        val firedAt: String? = null
     )
 
     fun getDatabaseFile(context: Context): File {
-        // Standard Android database location
-        val dbFile = context.getDatabasePath(DB_NAME)
-        if (dbFile.exists()) return dbFile
+        val candidateDirs = listOfNotNull(
+            context.filesDir,
+            context.noBackupFilesDir,
+            File(context.filesDir.parentFile ?: context.filesDir, "app_flutter"),
+            context.getDatabasePath("dummy").parentFile,
+            context.filesDir.parentFile
+        )
 
-        // PathProvider default files directory
-        val filesDb = File(context.filesDir, DB_NAME)
-        if (filesDb.exists()) return filesDb
+        // 1. Direct match with candidates
+        for (dir in candidateDirs) {
+            for (name in DB_NAMES) {
+                val f = File(dir, name)
+                if (f.exists() && f.length() > 0) return f
+            }
+        }
 
-        // PathProvider app_flutter directory
-        val appFlutterDb = File(context.filesDir.parentFile, "app_flutter/$DB_NAME")
-        if (appFlutterDb.exists()) return appFlutterDb
+        // 2. Discover any existing .sqlite or .db file in the directories
+        for (dir in candidateDirs) {
+            val dbFiles = dir.listFiles { _, name -> name.endsWith(".sqlite") || name.endsWith(".db") }
+            if (!dbFiles.isNullOrEmpty()) {
+                val best = dbFiles.maxByOrNull { it.length() }
+                if (best != null && best.exists()) return best
+            }
+        }
 
-        return dbFile
+        return File(context.filesDir, "katala.sqlite")
     }
 
     fun openDatabase(context: Context): SQLiteDatabase? {
@@ -77,6 +91,7 @@ object DatabaseHelper {
                     r.intent_type, 
                     t.scheduled_time_utc,
                     t.notification_id,
+                    t.fired_at,
                     a.action_type,
                     a.target_value
                 FROM reminder r
@@ -95,6 +110,7 @@ object DatabaseHelper {
                 val intentTypeIdx = cursor.getColumnIndex("intent_type")
                 val timeIdx = cursor.getColumnIndex("scheduled_time_utc")
                 val nidIdx = cursor.getColumnIndex("notification_id")
+                val firedAtIdx = cursor.getColumnIndex("fired_at")
                 val actionTypeIdx = cursor.getColumnIndex("action_type")
                 val targetIdx = cursor.getColumnIndex("target_value")
 
@@ -105,6 +121,7 @@ object DatabaseHelper {
                     val intentType = if (intentTypeIdx >= 0 && !cursor.isNull(intentTypeIdx)) cursor.getString(intentTypeIdx) else "GENERAL"
                     val scheduledTimeUtc = cursor.getString(timeIdx)
                     val nid = if (nidIdx >= 0 && !cursor.isNull(nidIdx)) cursor.getInt(nidIdx) else (id.hashCode() and 0x7FFFFFFF)
+                    val firedAt = if (firedAtIdx >= 0 && !cursor.isNull(firedAtIdx)) cursor.getString(firedAtIdx) else null
                     val actionType = if (actionTypeIdx >= 0 && !cursor.isNull(actionTypeIdx)) cursor.getString(actionTypeIdx) else null
                     val targetValue = if (targetIdx >= 0 && !cursor.isNull(targetIdx)) cursor.getString(targetIdx) else null
 
@@ -117,7 +134,8 @@ object DatabaseHelper {
                             category = intentType.lowercase(),
                             actionType = actionType,
                             actionTarget = targetValue,
-                            notificationId = nid
+                            notificationId = nid,
+                            firedAt = firedAt
                         )
                     )
                 }
@@ -223,6 +241,48 @@ object DatabaseHelper {
             )
         } catch (e: Exception) {
             // Ignore metadata update failures
+        } finally {
+            db.close()
+        }
+    }
+
+    /**
+     * Marks trigger as fired when OS notification is displayed.
+     */
+    fun markTriggerFired(context: Context, reminderId: String): Boolean {
+        val db = openDatabase(context) ?: return false
+        return try {
+            val now = Instant.now().toString()
+            val values = ContentValues().apply {
+                put("fired_at", now)
+            }
+            val rows = db.update("trigger_", values, "reminder_id = ?", arrayOf(reminderId))
+            rows > 0
+        } catch (e: Exception) {
+            false
+        } finally {
+            db.close()
+        }
+    }
+
+    /**
+     * Checks if reminder is currently pending or snoozed and not deleted.
+     */
+    fun isReminderActive(context: Context, reminderId: String): Boolean {
+        val db = openDatabase(context) ?: return true
+        return try {
+            val query = "SELECT status, is_deleted FROM reminder WHERE id = ?"
+            db.rawQuery(query, arrayOf(reminderId)).use { cursor ->
+                if (cursor.moveToNext()) {
+                    val status = cursor.getString(0)
+                    val isDeleted = cursor.getInt(1)
+                    isDeleted == 0 && (status == "PENDING" || status == "SNOOZED")
+                } else {
+                    false
+                }
+            }
+        } catch (e: Exception) {
+            true
         } finally {
             db.close()
         }

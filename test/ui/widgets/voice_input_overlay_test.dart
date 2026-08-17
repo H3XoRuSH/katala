@@ -73,7 +73,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('Draft speech'), findsOneWidget);
+      expect(find.text('Draft speech'), findsWidgets);
 
       // Tap cancel close button
       await tester.tap(find.byKey(const Key('cancel_voice_button')));

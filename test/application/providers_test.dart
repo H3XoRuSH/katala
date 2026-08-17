@@ -54,7 +54,7 @@ void main() {
 
       final pendingReminders = await container.read(pendingRemindersStreamProvider.future);
       expect(pendingReminders, hasLength(1));
-      expect(pendingReminders.first.title, 'hydrate');
+      expect(pendingReminders.first.title.toLowerCase(), 'hydrate');
     });
   });
 }

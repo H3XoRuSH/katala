@@ -72,6 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 84),
         dismissDirection: DismissDirection.horizontal,
         duration: const Duration(seconds: 5),
         content: Text(message),
@@ -154,6 +155,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 84),
               dismissDirection: DismissDirection.horizontal,
               duration: const Duration(seconds: 4),
               content: Text('✓ Created: "${savedReminder.title}"'),
@@ -238,8 +240,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final remindersAsync = ref.watch(pendingRemindersStreamProvider);
     final clock = ref.watch(clockProvider);
-    final nowUtc = clock.now();
-    final nowLocal = nowUtc.toLocal();
+    final nowUtc = clock.now().toUtc();
+    final nowLocal = clock.now().toLocal();
     final tomorrowLocal = nowLocal.add(const Duration(days: 1));
     final endOfWeekLocal = nowLocal.add(Duration(days: 7 - nowLocal.weekday));
 
@@ -294,12 +296,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           final uncertainCount =
               reminders.where((r) => r.trigger?.deliveryStatus == DeliveryStatus.deliveryUncertain).length;
 
-          // Categorize reminders
           final overdue = <Reminder>[];
           final today = <Reminder>[];
           final tomorrow = <Reminder>[];
           final thisWeek = <Reminder>[];
           final later = <Reminder>[];
+
+          final nowMinuteUtc = DateTime.utc(nowUtc.year, nowUtc.month, nowUtc.day, nowUtc.hour, nowUtc.minute);
 
           for (final reminder in reminders) {
             final scheduledUtc = reminder.trigger?.scheduledTimeUtc;
@@ -308,7 +311,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               continue;
             }
 
-            if (scheduledUtc.isBefore(nowUtc)) {
+            if (scheduledUtc.isBefore(nowMinuteUtc)) {
               overdue.add(reminder);
             } else {
               final scheduledLocal = scheduledUtc.toLocal();
@@ -332,11 +335,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Stack(
               children: [
                 if (!hasAnyReminders)
-                  ListView(
+                  CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    children: [
-                      if (uncertainCount > 0) ReliabilityBanner(uncertainCount: uncertainCount),
-                      const EmptyTimelineState(),
+                    slivers: [
+                      if (uncertainCount > 0)
+                        SliverToBoxAdapter(
+                          child: ReliabilityBanner(uncertainCount: uncertainCount),
+                        ),
+                      const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: EmptyTimelineState(),
+                        ),
+                      ),
                     ],
                   )
                 else

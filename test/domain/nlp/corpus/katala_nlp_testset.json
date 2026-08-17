@@ -1,0 +1,812 @@
+[
+  {
+    "id": "tc_001",
+    "language": "en",
+    "input": "Remind me to call my mom in a minute",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "my mom",
+      "title": "Call my mom",
+      "temporal_expression": "in a minute",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_002",
+    "language": "en",
+    "input": "Text Dave at 7pm about the project files",
+    "expected": {
+      "intent": "create",
+      "action": "text",
+      "contact_name": "Dave",
+      "title": "Text Dave",
+      "temporal_expression": "at 7pm",
+      "notes": "the project files",
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_003",
+    "language": "en",
+    "input": "Pay the electric bill tomorrow morning",
+    "expected": {
+      "intent": "create",
+      "action": "pay",
+      "contact_name": null,
+      "title": "Pay the electric bill",
+      "temporal_expression": "tomorrow morning",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_004",
+    "language": "en",
+    "input": "Dentist appointment on Friday at 10 am",
+    "expected": {
+      "intent": "create",
+      "action": null,
+      "contact_name": null,
+      "title": "Dentist appointment",
+      "temporal_expression": "on Friday at 10 am",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_005",
+    "language": "en",
+    "input": "Remind me tomorrow at 8am",
+    "expected": {
+      "intent": "create",
+      "action": null,
+      "contact_name": null,
+      "title": null,
+      "temporal_expression": "tomorrow at 8am",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_006",
+    "language": "en",
+    "input": "call mom IN 5 MINS",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "mom",
+      "title": "Call mom",
+      "temporal_expression": "IN 5 MINS",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_007",
+    "language": "en",
+    "input": "remind me: buy milk",
+    "expected": {
+      "intent": "create",
+      "action": "buy",
+      "contact_name": null,
+      "title": "Buy milk",
+      "temporal_expression": null,
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_008",
+    "language": "en",
+    "input": "Call mom and ask about dinner",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "mom",
+      "title": "Call mom",
+      "temporal_expression": null,
+      "notes": "dinner",
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_009",
+    "language": "en",
+    "input": "Email my boss the quarterly report by 5pm",
+    "expected": {
+      "intent": "create",
+      "action": "email",
+      "contact_name": "my boss",
+      "title": "Email my boss",
+      "temporal_expression": "by 5pm",
+      "notes": "the quarterly report",
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_010",
+    "language": "en",
+    "input": "Take my medicine at 9pm",
+    "expected": {
+      "intent": "create",
+      "action": "take",
+      "contact_name": null,
+      "title": "Take my medicine",
+      "temporal_expression": "at 9pm",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_011",
+    "language": "en",
+    "input": "Drink water every 2 hours",
+    "expected": {
+      "intent": "create",
+      "action": "drink",
+      "contact_name": null,
+      "title": "Drink water",
+      "temporal_expression": "every 2 hours",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_012",
+    "language": "en",
+    "input": "Pick up the package from the lobby after lunch",
+    "expected": {
+      "intent": "create",
+      "action": "pick up",
+      "contact_name": null,
+      "title": "Pick up the package from the lobby",
+      "temporal_expression": "after lunch",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_013",
+    "language": "en",
+    "input": "Drop off laundry this Saturday morning",
+    "expected": {
+      "intent": "create",
+      "action": "drop off",
+      "contact_name": null,
+      "title": "Drop off laundry",
+      "temporal_expression": "this Saturday morning",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_014",
+    "language": "en",
+    "input": "Meet Sarah for coffee at 3 in the afternoon",
+    "expected": {
+      "intent": "create",
+      "action": "meet",
+      "contact_name": "Sarah",
+      "title": "Meet Sarah for coffee",
+      "temporal_expression": "at 3 in the afternoon",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_015",
+    "language": "en",
+    "input": "Team sync with engineering on Monday 9:30am",
+    "expected": {
+      "intent": "create",
+      "action": null,
+      "contact_name": null,
+      "title": "Team sync with engineering",
+      "temporal_expression": "on Monday 9:30am",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_016",
+    "language": "en",
+    "input": "Buy groceries later",
+    "expected": {
+      "intent": "create",
+      "action": "buy",
+      "contact_name": null,
+      "title": "Buy groceries",
+      "temporal_expression": "later",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_017",
+    "language": "en",
+    "input": "Transfer 5000 to my landlord on the 15th",
+    "expected": {
+      "intent": "create",
+      "action": "transfer",
+      "contact_name": "my landlord",
+      "title": "Transfer 5000 to my landlord",
+      "temporal_expression": "on the 15th",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_018",
+    "language": "en",
+    "input": "Call the clinic at 0917 555 1234 tomorrow to reschedule",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "the clinic",
+      "title": "Call the clinic",
+      "temporal_expression": "tomorrow",
+      "notes": "to reschedule",
+      "phone_number": "0917 555 1234",
+      "url": null
+    }
+  },
+  {
+    "id": "tc_019",
+    "language": "en",
+    "input": "Review https://katala.app/roadmap before the standup",
+    "expected": {
+      "intent": "create",
+      "action": "review",
+      "contact_name": null,
+      "title": "Review",
+      "temporal_expression": "before the standup",
+      "notes": null,
+      "phone_number": null,
+      "url": "https://katala.app/roadmap"
+    }
+  },
+  {
+    "id": "tc_020",
+    "language": "en",
+    "input": "Job interview at 8",
+    "expected": {
+      "intent": "create",
+      "action": null,
+      "contact_name": null,
+      "title": "Job interview",
+      "temporal_expression": "at 8",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_021",
+    "language": "en",
+    "input": "Workout at 6am note: leg day only",
+    "expected": {
+      "intent": "create",
+      "action": "workout",
+      "contact_name": null,
+      "title": "Workout",
+      "temporal_expression": "at 6am",
+      "notes": "leg day only",
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_022",
+    "language": "en",
+    "input": "Stretch in 20 minutes",
+    "expected": {
+      "intent": "create",
+      "action": "stretch",
+      "contact_name": null,
+      "title": "Stretch",
+      "temporal_expression": "in 20 minutes",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_023",
+    "language": "fil",
+    "input": "Tawagan si nanay mamaya",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "nanay",
+      "title": "Tawagan si nanay",
+      "temporal_expression": "mamaya",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_024",
+    "language": "fil",
+    "input": "Magbayad ng Meralco bukas ng umaga",
+    "expected": {
+      "intent": "create",
+      "action": "pay",
+      "contact_name": null,
+      "title": "Magbayad ng Meralco",
+      "temporal_expression": "bukas ng umaga",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_025",
+    "language": "fil",
+    "input": "Uminom ng gamot mamayang alas-otso ng gabi",
+    "expected": {
+      "intent": "create",
+      "action": "take",
+      "contact_name": null,
+      "title": "Uminom ng gamot",
+      "temporal_expression": "mamayang alas-otso ng gabi",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_026",
+    "language": "fil",
+    "input": "Bumili ng bigas sa palengke bukas ng hapon",
+    "expected": {
+      "intent": "create",
+      "action": "buy",
+      "contact_name": null,
+      "title": "Bumili ng bigas sa palengke",
+      "temporal_expression": "bukas ng hapon",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_027",
+    "language": "taglish",
+    "input": "I-text si Dave mamayang alas-singko",
+    "expected": {
+      "intent": "create",
+      "action": "text",
+      "contact_name": "Dave",
+      "title": "I-text si Dave",
+      "temporal_expression": "mamayang alas-singko",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_028",
+    "language": "taglish",
+    "input": "Pa-remind ako na kunin ang laundry sa Sabado",
+    "expected": {
+      "intent": "create",
+      "action": "pick up",
+      "contact_name": null,
+      "title": "Kunin ang laundry",
+      "temporal_expression": "sa Sabado",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_029",
+    "language": "taglish",
+    "input": "Mag-transfer ng pera sa BPI sa Lunes ng umaga",
+    "expected": {
+      "intent": "create",
+      "action": "transfer",
+      "contact_name": null,
+      "title": "Mag-transfer ng pera sa BPI",
+      "temporal_expression": "sa Lunes ng umaga",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_030",
+    "language": "fil",
+    "input": "Bayaran ang tubig sa Maynilad sa Biyernes",
+    "expected": {
+      "intent": "create",
+      "action": "pay",
+      "contact_name": null,
+      "title": "Bayaran ang tubig sa Maynilad",
+      "temporal_expression": "sa Biyernes",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_031",
+    "language": "fil",
+    "input": "Sunduin si ate sa airport ng alas-dose ng tanghali",
+    "expected": {
+      "intent": "create",
+      "action": "pick up",
+      "contact_name": "ate",
+      "title": "Sunduin si ate sa airport",
+      "temporal_expression": "ng alas-dose ng tanghali",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_032",
+    "language": "taglish",
+    "input": "Meeting kasama si Ma'am Cruz bukas ng 10am",
+    "expected": {
+      "intent": "create",
+      "action": "meet",
+      "contact_name": "Ma'am Cruz",
+      "title": "Meeting kasama si Ma'am Cruz",
+      "temporal_expression": "bukas ng 10am",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_033",
+    "language": "taglish",
+    "input": "I-email si sir tungkol sa budget report mamaya",
+    "expected": {
+      "intent": "create",
+      "action": "email",
+      "contact_name": "sir",
+      "title": "I-email si sir",
+      "temporal_expression": "mamaya",
+      "notes": "budget report",
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_034",
+    "language": "fil",
+    "input": "Magpa-appointment sa dentista sa Martes ng hapon",
+    "expected": {
+      "intent": "create",
+      "action": null,
+      "contact_name": null,
+      "title": "Magpa-appointment sa dentista",
+      "temporal_expression": "sa Martes ng hapon",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_035",
+    "language": "taglish",
+    "input": "Mag-exercise bukas ng umaga bago mag-trabaho",
+    "expected": {
+      "intent": "create",
+      "action": "workout",
+      "contact_name": null,
+      "title": "Mag-exercise",
+      "temporal_expression": "bukas ng umaga",
+      "notes": "bago mag-trabaho",
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_036",
+    "language": "taglish",
+    "input": "Tawagan si Doc Reyes sa 0917-234-5678 bukas",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "Doc Reyes",
+      "title": "Tawagan si Doc Reyes",
+      "temporal_expression": "bukas",
+      "notes": null,
+      "phone_number": "0917-234-5678",
+      "url": null
+    }
+  },
+  {
+    "id": "tc_037",
+    "language": "fil",
+    "input": "Bumili ng gatas at tinapay pagkatapos ng trabaho",
+    "expected": {
+      "intent": "create",
+      "action": "buy",
+      "contact_name": null,
+      "title": "Bumili ng gatas at tinapay",
+      "temporal_expression": "pagkatapos ng trabaho",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_038",
+    "language": "taglish",
+    "input": "Paalala mo na mag-submit ng report sa Huwebes",
+    "expected": {
+      "intent": "create",
+      "action": "submit",
+      "contact_name": null,
+      "title": "Mag-submit ng report",
+      "temporal_expression": "sa Huwebes",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_039",
+    "language": "taglish",
+    "input": "I-check ang https://gcash.com/bills mamayang gabi",
+    "expected": {
+      "intent": "create",
+      "action": "check",
+      "contact_name": null,
+      "title": "I-check",
+      "temporal_expression": "mamayang gabi",
+      "notes": null,
+      "phone_number": null,
+      "url": "https://gcash.com/bills"
+    }
+  },
+  {
+    "id": "tc_040",
+    "language": "fil",
+    "input": "Alas-otso bukas ng umaga",
+    "expected": {
+      "intent": "create",
+      "action": null,
+      "contact_name": null,
+      "title": null,
+      "temporal_expression": "Alas-otso bukas ng umaga",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_041",
+    "language": "fil",
+    "input": "Ihatid si bunso sa school ng 6:30 ng umaga",
+    "expected": {
+      "intent": "create",
+      "action": "drop off",
+      "contact_name": "bunso",
+      "title": "Ihatid si bunso sa school",
+      "temporal_expression": "ng 6:30 ng umaga",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_042",
+    "language": "taglish",
+    "input": "Mag-grocery sa SM sa Sabado ng hapon",
+    "expected": {
+      "intent": "create",
+      "action": "buy",
+      "contact_name": null,
+      "title": "Mag-grocery sa SM",
+      "temporal_expression": "sa Sabado ng hapon",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_043",
+    "language": "fil",
+    "input": "Magbayad ng renta sa ika-5 ng buwan",
+    "expected": {
+      "intent": "create",
+      "action": "pay",
+      "contact_name": null,
+      "title": "Magbayad ng renta",
+      "temporal_expression": "sa ika-5 ng buwan",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_044",
+    "language": "taglish",
+    "input": "Kausapin si HR tungkol sa leave credits bukas",
+    "expected": {
+      "intent": "create",
+      "action": "meet",
+      "contact_name": "HR",
+      "title": "Kausapin si HR",
+      "temporal_expression": "bukas",
+      "notes": "leave credits",
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_045",
+    "language": "en",
+    "input": "Hey Katala remind me to call my dad in 10 minutes",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "my dad",
+      "title": "Call my dad",
+      "temporal_expression": "in 10 minutes",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_046",
+    "language": "en",
+    "input": "Please don't forget to buy dog food later tonight",
+    "expected": {
+      "intent": "create",
+      "action": "buy",
+      "contact_name": null,
+      "title": "Buy dog food",
+      "temporal_expression": "later tonight",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_047",
+    "language": "taglish",
+    "input": "Paki-remind naman ako na magbayad ng Meralco mamayang hapon",
+    "expected": {
+      "intent": "create",
+      "action": "pay",
+      "contact_name": null,
+      "title": "Magbayad ng Meralco",
+      "temporal_expression": "mamayang hapon",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_048",
+    "language": "en",
+    "input": "uh remind me to um send the invoice tomorrow",
+    "expected": {
+      "intent": "create",
+      "action": "send",
+      "contact_name": null,
+      "title": "Send the invoice",
+      "temporal_expression": "tomorrow",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_049",
+    "language": "taglish",
+    "input": "Hey katala, i-remind mo ako na tumawag sa bangko bukas ng umaga",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "bangko",
+      "title": "Tumawag sa bangko",
+      "temporal_expression": "bukas ng umaga",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_050",
+    "language": "en",
+    "input": "remind me to to call the vet at 4 pm",
+    "expected": {
+      "intent": "create",
+      "action": "call",
+      "contact_name": "the vet",
+      "title": "Call the vet",
+      "temporal_expression": "at 4 pm",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_051",
+    "language": "fil",
+    "input": "Sabihin mo sa akin bukas na kunin ang gamot sa botika",
+    "expected": {
+      "intent": "create",
+      "action": "pick up",
+      "contact_name": null,
+      "title": "Kunin ang gamot sa botika",
+      "temporal_expression": "bukas",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_052",
+    "language": "en",
+    "input": "Can you please remind me about the parent teacher meeting on Wednesday at 2",
+    "expected": {
+      "intent": "create",
+      "action": null,
+      "contact_name": null,
+      "title": "Parent teacher meeting",
+      "temporal_expression": "on Wednesday at 2",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_053",
+    "language": "taglish",
+    "input": "hey katala text kuya jun in five minutes",
+    "expected": {
+      "intent": "create",
+      "action": "text",
+      "contact_name": "kuya jun",
+      "title": "Text kuya jun",
+      "temporal_expression": "in five minutes",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  },
+  {
+    "id": "tc_054",
+    "language": "en",
+    "input": "Remind me later I mean tonight to lock the gate",
+    "expected": {
+      "intent": "create",
+      "action": "lock",
+      "contact_name": null,
+      "title": "Lock the gate",
+      "temporal_expression": "tonight",
+      "notes": null,
+      "phone_number": null,
+      "url": null
+    }
+  }
+]

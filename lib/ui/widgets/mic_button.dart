@@ -29,6 +29,8 @@ class MicButton extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
+              behavior: SnackBarBehavior.floating,
+              margin: EdgeInsets.fromLTRB(16, 0, 16, 84),
               content: Text('Microphone permission is required for voice input.'),
               backgroundColor: AppColors.error,
             ),
@@ -45,6 +47,8 @@ class MicButton extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 84),
             content: Text(
               availability == SpeechAvailability.permissionDenied
                   ? 'Microphone permission denied for speech recognition.'

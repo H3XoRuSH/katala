@@ -197,4 +197,52 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump();
   });
+
+  testWidgets('Reminders scheduled in the same minute are categorized as Today, not Overdue', (tester) async {
+    // Current time: 10:00:35 UTC
+    fakeClock.set(DateTime.utc(2026, 8, 17, 10, 0, 35));
+
+    // Reminder scheduled for 10:00:00 UTC (same minute)
+    final r = await insertReminder(
+      id: 'rem-same-minute',
+      title: 'Current minute reminder',
+      scheduledTimeUtc: DateTime.utc(2026, 8, 17, 10, 0, 0),
+    );
+
+    await tester.pumpWidget(createSubject(fixedReminders: [r]));
+    await tester.pumpAndSettle();
+
+    // Should appear in Today group, not Overdue
+    expect(find.text('TODAY'), findsOneWidget);
+    expect(find.text('OVERDUE'), findsNothing);
+    expect(find.text('Current minute reminder'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
+  });
+
+  testWidgets('Reminders scheduled 1 minute ahead in local timezone are categorized as Today, not Overdue',
+      (tester) async {
+    // Current time: 22:55:00 Local (UTC+8) -> 14:55:00 UTC
+    // Using a local (non-UTC) DateTime to simulate SystemClock on physical devices
+    fakeClock.set(DateTime(2026, 8, 17, 22, 55, 0));
+
+    // Reminder scheduled for 1 minute in the future: 22:56:00 Local -> 14:56:00 UTC
+    final r = await insertReminder(
+      id: 'rem-in-one-minute',
+      title: 'Call Gab',
+      scheduledTimeUtc: DateTime(2026, 8, 17, 22, 56, 0).toUtc(),
+    );
+
+    await tester.pumpWidget(createSubject(fixedReminders: [r]));
+    await tester.pumpAndSettle();
+
+    // Must be in TODAY, never OVERDUE
+    expect(find.text('TODAY'), findsOneWidget);
+    expect(find.text('OVERDUE'), findsNothing);
+    expect(find.text('Call Gab'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
+  });
 }

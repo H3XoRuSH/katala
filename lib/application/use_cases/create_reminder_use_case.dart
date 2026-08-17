@@ -96,17 +96,24 @@ class CreateReminderUseCase {
     }
 
     // 3. OS notification scheduling (AFTER persistence per ADR-11)
-    try {
-      final notificationId = await notificationBridge.schedule(persisted);
-      await repository.updateTriggerScheduling(persisted.id, true, notificationId);
-      persisted = persisted.copyWith(
-        trigger: persisted.trigger?.copyWith(
-          notificationScheduled: true,
-          notificationId: notificationId,
-        ),
-      );
-    } catch (e) {
-      // DB is authoritative: reminder remains safely saved, reconciliation will re-attempt scheduling
+    final trigger = persisted.trigger;
+    final isEligible = trigger != null &&
+        (trigger.scheduledTimeUtc.isAfter(clock.now().toUtc()) ||
+            (trigger.firedAt == null &&
+                trigger.scheduledTimeUtc.isAfter(clock.now().toUtc().subtract(const Duration(minutes: 2)))));
+    if (isEligible) {
+      try {
+        final notificationId = await notificationBridge.schedule(persisted);
+        await repository.updateTriggerScheduling(persisted.id, true, notificationId);
+        persisted = persisted.copyWith(
+          trigger: persisted.trigger?.copyWith(
+            notificationScheduled: true,
+            notificationId: notificationId,
+          ),
+        );
+      } catch (e) {
+        // DB is authoritative: reminder remains safely saved, reconciliation will re-attempt scheduling
+      }
     }
 
     return Result.success(persisted);

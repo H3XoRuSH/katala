@@ -50,7 +50,14 @@ class EditReminderUseCase {
       return Result.failure(PersistenceFailed('Failed to update reminder: $e'));
     }
 
-    if (timeChanged && (persisted.status == ReminderStatus.pending || persisted.status == ReminderStatus.snoozed)) {
+    final trigger = persisted.trigger;
+    final isEligible = trigger != null &&
+        (trigger.scheduledTimeUtc.isAfter(clock.now().toUtc()) ||
+            (trigger.firedAt == null &&
+                trigger.scheduledTimeUtc.isAfter(clock.now().toUtc().subtract(const Duration(minutes: 2)))));
+    if (timeChanged &&
+        (persisted.status == ReminderStatus.pending || persisted.status == ReminderStatus.snoozed) &&
+        isEligible) {
       try {
         final notifId = await notificationBridge.schedule(persisted);
         await repository.updateTriggerScheduling(persisted.id, true, notifId);

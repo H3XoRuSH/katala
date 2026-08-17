@@ -229,6 +229,16 @@ class NotificationBridgeImpl(
         // Cancel any previous alarm for this reminder first (idempotent)
         cancelNotification(notificationId)
 
+        val firedAt = reminderData["firedAt"] as? String
+            ?: (reminderData["trigger"] as? Map<*, *>)?.get("firedAt") as? String
+        val nowMillis = System.currentTimeMillis()
+        val isEligible = triggerEpochMillis > nowMillis ||
+            (firedAt == null && triggerEpochMillis >= nowMillis - 120_000L)
+
+        if (!isEligible) {
+            return notificationId
+        }
+
         if (alarmManager == null) {
             throw IllegalStateException("AlarmManager service is unavailable")
         }
@@ -313,7 +323,8 @@ class NotificationBridgeImpl(
     }
 
     private fun cancelNotification(notificationId: Int) {
-        val receiverIntent = Intent("com.katala.app.receivers.NotificationActionReceiver").apply {
+        val receiverIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = ACTION_ALARM_TRIGGER
             setPackage(context.packageName)
         }
 
